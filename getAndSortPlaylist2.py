@@ -1,3 +1,5 @@
+import tone_analyzer as t
+from PyLyrics import PyLyrics
 import sys
 import spotipy
 import spotipy.util as util
@@ -40,15 +42,21 @@ joy_songs = []
 for item in tracks:
 	track = item['track']
 	print track['name'] + ' - ' + track['artists'][0]['name']
+	print
+	print
+
+	track_id = track["id"]
+	print
+	print
 	track = item['track']
 	songname = track['name']
 	artist = track['artists'][0]['name']
+	song = {'name':songname, 'artist':artist, 'id':track_id}
 	lyrics = None
 	try:
 		lyrics = PyLyrics.getLyrics(artist, songname)
 
 		tone_dict = t.get_tone_for_text(lyrics)
-		print_tone_dict(tone_dict)
 
 		emotion_dict = tone_dict["document_tone"]["tone_categories"][0]["tones"]
 		joy = [x for x in emotion_dict if x['tone_name'] == "Joy"][0]['score']
@@ -57,7 +65,6 @@ for item in tracks:
 		print joy
 		print sadness
 
-		song = {'name':songname, 'artist':artist}
 		if joy > sadness:
 			joy_songs.append(song)
 		else:
@@ -69,8 +76,22 @@ for item in tracks:
 
 print "Sad songs:"
 for song in sad_songs:
-	print song
+	print song['name'] + " - " + song['artist'] 
 print
 print "Joy songs:"
 for song in joy_songs:
-	print song
+	print song['name'] + " - " + song['artist'] 
+
+
+
+happyTracks = [x['id'] for x in joy_songs]
+sadTracks = [x['id'] for x in sad_songs]
+
+
+pInfo = sp.user_playlist_create(username, 'happySongs', public = False)
+pID = pInfo['id']
+sp.user_playlist_add_tracks(username, pID, happyTracks)
+
+pInfo = sp.user_playlist_create(username, 'sadSongs', public = False)
+pID = pInfo['id']
+sp.user_playlist_add_tracks(username, pID, sadTracks)
