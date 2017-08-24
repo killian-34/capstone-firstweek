@@ -1,0 +1,3 @@
+export SPOTIPY_CLIENT_ID='e5cbc550111b4a80a80fc193010bdac4'
+export SPOTIPY_CLIENT_SECRET='3be133ce955247c2a219f55f88300a9d'
+export SPOTIPY_REDIRECT_URI='http://localhost:8888/callback'
